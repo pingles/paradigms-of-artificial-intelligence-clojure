@@ -16,6 +16,11 @@
   [state operators goal]
   (member? goal state))
 
+(defn appropriate?
+  "An op is appropriate to a goal if it is in its add-list"
+  [goal op]
+  (member? goal (:add-list op)))
+
 (defn gps
   "General Problem Solver: achieve all goals using ops"
   [state goals ops]
