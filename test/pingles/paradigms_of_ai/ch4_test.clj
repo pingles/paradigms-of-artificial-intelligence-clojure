@@ -11,6 +11,11 @@
   (is (not (appropriate? :eating
                          (make-op :visit-library :add-list [:reading])))))
 
+(deftest applying-ops
+  (is (= #{:paid}
+         (apply-op #{:eating}
+                   (make-op :pay :add-list [:paid] :del-list [:eating])))))
+
 (deftest general-problem-solver
   (is (= :solved
          (gps #{:home} #{:home} []))))

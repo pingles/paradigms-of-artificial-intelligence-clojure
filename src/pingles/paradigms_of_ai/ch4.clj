@@ -21,6 +21,11 @@
   [goal op]
   (member? goal (:add-list op)))
 
+(defn apply-op
+  "Applies the operation: adding and removing states when op is applicable."
+  [state op]
+  )
+
 (defn gps
   "General Problem Solver: achieve all goals using ops"
   [state goals ops]
