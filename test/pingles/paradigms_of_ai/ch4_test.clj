@@ -14,7 +14,10 @@
 (deftest applying-ops
   (is (= #{:paid}
          (apply-op #{:eating}
-                   (make-op :pay :add-list [:paid] :del-list [:eating])))))
+                   (make-op :pay :add-list [:paid] :del-list [:eating]))))
+  (is (= #{:eating}
+         (apply-op #{:eating}
+                   (make-op :pay :add-list [:paid] :del-list [:eating] :precond #{:have-money})))))
 
 (deftest general-problem-solver
   (is (= :solved

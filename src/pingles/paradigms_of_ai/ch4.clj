@@ -1,4 +1,5 @@
-(ns pingles.paradigms-of-ai.ch4)
+(ns pingles.paradigms-of-ai.ch4
+  (:use [clojure.set :only (difference union)]))
 
 (defrecord Op [action precond add-list del-list])
 
@@ -24,7 +25,10 @@
 (defn apply-op
   "Applies the operation: adding and removing states when op is applicable."
   [state op]
-  )
+  (-> state
+      (difference (:del-list op))
+      (union (:add-list op))
+      (set)))
 
 (defn gps
   "General Problem Solver: achieve all goals using ops"
