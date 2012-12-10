@@ -39,6 +39,10 @@
          (gps #{:son-at-home :car-works}
               #{:son-at-school}
               school-ops)))
+  (is (= :solved
+         (gps #{:son-at-home :car-works}
+              #{:son-at-school}
+              school-ops)))
   (is (nil? (gps #{:son-at-home :car-needs-battery :have-money}
               #{:son-at-school}
               school-ops))))
