@@ -11,17 +11,17 @@
   [x coll]
   (not (nil? (some #{x} coll))))
 
+(defn appropriate?
+  "An op is appropriate to a goal if it is in its add-list"
+  [goal op]
+  (member? goal (:add-list op)))
+
 (defn achieve
   "A goal is acheived if it already holds or if there is an appropriate op
    for it that is applicable"
   [state operators goal]
   (or (member? goal state)
       (not (nil? (some (partial appropriate? goal) operators)))))
-
-(defn appropriate?
-  "An op is appropriate to a goal if it is in its add-list"
-  [goal op]
-  (member? goal (:add-list op)))
 
 (defn apply-op
   "Applies the operation: adding and removing states when op is applicable."
@@ -32,6 +32,11 @@
         (union (:add-list op))
         (set))
     state))
+
+;; in the PAIP book apply-op modifies the current *state*.
+;; and recurs through calling (every? achieve preconditions)
+;;
+
 
 (defn gps
   "General Problem Solver: achieve all goals using ops"
