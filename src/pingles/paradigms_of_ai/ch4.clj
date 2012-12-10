@@ -1,5 +1,5 @@
 (ns pingles.paradigms-of-ai.ch4
-  (:use [clojure.set :only (difference union)]))
+  (:use [clojure.set :only (intersection difference union)]))
 
 (defrecord Op [action precond add-list del-list])
 
@@ -15,7 +15,8 @@
   "A goal is acheived if it already holds or if there is an appropriate op
    for it that is applicable"
   [state operators goal]
-  (member? goal state))
+  (or (member? goal state)
+      (not (nil? (some (partial appropriate? goal) operators)))))
 
 (defn appropriate?
   "An op is appropriate to a goal if it is in its add-list"
@@ -25,10 +26,12 @@
 (defn apply-op
   "Applies the operation: adding and removing states when op is applicable."
   [state op]
-  (-> state
-      (difference (:del-list op))
-      (union (:add-list op))
-      (set)))
+  (if (empty? (difference (:precond op) state))
+    (-> state
+        (difference (:del-list op))
+        (union (:add-list op))
+        (set))
+    state))
 
 (defn gps
   "General Problem Solver: achieve all goals using ops"
@@ -36,8 +39,9 @@
   (if (every? (partial achieve state ops) goals)
     :solved))
 
-(comment
-  (def school-ops [(make-op :drive-son-to-school
+
+
+(def school-ops [(make-op :drive-son-to-school
                             :precond #{:son-at-home :car-works}
                             :add-list [:son-at-school]
                             :del-list [:son-at-home])
@@ -58,6 +62,7 @@
                             :add-list [:shop-has-money]
                             :del-list [:have-money])])
 
+(comment
   (gps #{:son-at-home :car-works}
        #{:son-at-school}
        school-ops))
