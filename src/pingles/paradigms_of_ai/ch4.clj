@@ -81,7 +81,3 @@
                           :add-list [:shop-has-money]
                           :del-list [:have-money])])
 
-(comment
-  (gps #{:son-at-home :car-works}
-       #{:son-at-school}
-       school-ops))
