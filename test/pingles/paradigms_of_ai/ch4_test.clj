@@ -38,15 +38,25 @@
                      (assoc op :precond #{:have-money}))))))
 
 (deftest general-problem-solver
-  (is (= #{:home}
-         (gps #{:home} #{:home} [])))
-  (is (solved? #{:home}
-               (gps #{:home} #{:home} [])))
-  (is (= #{:son-at-school :car-works}
-         (gps #{:son-at-home :car-needs-battery :have-money :have-phone-book}
-              #{:son-at-school}
-              school-ops)))
-  (is (solved? #{:son-at-school :car-works}
-               (gps #{:son-at-home :car-needs-battery :have-money :have-phone-book}
-                    #{:son-at-school}
-                    school-ops))))
+  (testing "solved problems"
+    (is (= #{:home}
+           (gps #{:home} #{:home} [])))
+    (is (solved? #{:home}
+                 (gps #{:home} #{:home} [])))
+    (is (= #{:son-at-school :car-works}
+           (gps #{:son-at-home :car-needs-battery :have-money :have-phone-book}
+                #{:son-at-school}
+                school-ops)))
+    (is (solved? #{:son-at-school :car-works}
+                 (gps #{:son-at-home :car-needs-battery :have-money :have-phone-book}
+                      #{:son-at-school}
+                      school-ops))))
+  (testing "unsolvable problem"
+    (is (= #{:son-at-home :car-needs-battery :have-money}
+           (gps #{:son-at-home :car-needs-battery :have-money}
+                #{:son-at-school}
+                school-ops)))
+    (is (not (solved? #{:son-at-school}
+                      (gps #{:son-at-home :car-needs-battery :have-money}
+                           #{:son-at-school}
+                           school-ops))))))
