@@ -49,9 +49,15 @@
 
 (defn gps
   "General Problem Solver: achieve all goals using ops"
-  [state goals ops]
-  (if (every? #(member? % (achieve state ops %)) goals)
-    :solved))
+  [current-state goals ops]
+  (reduce (fn [state goal] (achieve state ops goal))
+          current-state
+          goals))
+
+(defn solved?
+  "Checks whether our state achieves all goals"
+  [goals state]
+  (every? #(member? % state) goals))
 
 
 (def school-ops [(make-op :drive-son-to-school

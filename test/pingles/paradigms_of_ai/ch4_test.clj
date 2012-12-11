@@ -38,16 +38,15 @@
                      (assoc op :precond #{:have-money}))))))
 
 (deftest general-problem-solver
-  (is (= :solved
+  (is (= #{:home}
          (gps #{:home} #{:home} [])))
-  (is (= :solved
+  (is (solved? #{:home}
+               (gps #{:home} #{:home} [])))
+  (is (= #{:son-at-school :car-works}
          (gps #{:son-at-home :car-needs-battery :have-money :have-phone-book}
               #{:son-at-school}
               school-ops)))
-  (is (= :solved
-         (gps #{:son-at-home :car-works}
-              #{:son-at-school}
-              school-ops)))
-  (is (nil? (gps #{:son-at-home :car-needs-battery :have-money}
-                 #{:son-at-school}
-                 school-ops))))
+  (is (solved? #{:son-at-school :car-works}
+               (gps #{:son-at-home :car-needs-battery :have-money :have-phone-book}
+                    #{:son-at-school}
+                    school-ops))))
