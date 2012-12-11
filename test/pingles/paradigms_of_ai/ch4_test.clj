@@ -14,40 +14,40 @@
 (deftest achieving-goals
   (testing "goal is subset of current state"
     (is (= #{:eating}
-           (achieve #{:eating} [] :eating)))
+           (achieve2 [] #{:eating} :eating)))
     (is (= #{:eating :happy}
-           (achieve #{:eating :happy} [] :eating)))
+           (achieve2 [] #{:eating :happy} :eating)))
     (is (= #{:eating}
-           (achieve #{:eating} [] :pay))))
+           (achieve2 [] #{:eating} :pay))))
   (testing "goal is achievable through applicable goal"
     (is (= #{:standing}
-           (achieve #{:sitting}
-                    [(make-op :stand
-                              :precond #{:sitting}
-                              :add-list [:standing]
-                              :del-list [:sitting])]
-                    :standing))))
+           (achieve2 [(make-op :stand
+                               :precond #{:sitting}
+                               :add-list [:standing]
+                               :del-list [:sitting])]
+                     #{:sitting}
+                     :standing))))
   (testing "goal is achievable through nested operation"
     (is (solved? #{:standing}
-                 (achieve #{:sitting}
-                          [(make-op :stand
-                                    :precond #{:stretch}
-                                    :add-list [:standing]
-                                    :del-list [:sitting])
-                           (make-op :stretching
-                                    :precond #{:sitting}
-                                    :add-list [:stretch])]
-                          :standing)))
+                 (achieve2 [(make-op :stand
+                                     :precond #{:stretch}
+                                     :add-list [:standing]
+                                     :del-list [:sitting])
+                            (make-op :stretching
+                                     :precond #{:sitting}
+                                     :add-list [:stretch])]
+                           #{:sitting}
+                           :standing)))
     (is (= #{:standing :stretch}
-           (achieve #{:sitting}
-                    [(make-op :stand
-                              :precond #{:stretch}
-                              :add-list [:standing]
-                              :del-list [:sitting])
-                     (make-op :stretching
-                              :precond #{:sitting}
-                              :add-list [:stretch])]
-                    :standing)))))
+           (achieve2 [(make-op :stand
+                               :precond #{:stretch}
+                               :add-list [:standing]
+                               :del-list [:sitting])
+                      (make-op :stretching
+                               :precond #{:sitting}
+                               :add-list [:stretch])]
+                     #{:sitting}
+                     :standing)))))
 
 (deftest applying-ops
   (let [op (make-op :pay :add-list [:paid] :del-list [:eating])]

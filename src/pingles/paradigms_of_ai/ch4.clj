@@ -16,15 +16,14 @@
   [goal op]
   (member? goal (:add-list op)))
 
-
 (defn achieve
   "A goal is acheived if it already holds or if there is an appropriate op
    for it that is applicable"
-  [state operators goal]
+  [operators state goal]
   (if (member? goal state)
     state
     (reduce (fn [state {:keys [precond] :as op}]
-              (apply-op (reduce #(achieve %1 operators %2) state precond) op))
+              (apply-op (reduce (partial achieve operators) state precond) op))
             state
             (filter (partial appropriate? goal) operators))))
 
@@ -41,9 +40,7 @@
 (defn gps
   "General Problem Solver: achieve all goals using ops"
   [current-state goals ops]
-  (reduce (fn [state goal] (achieve state ops goal))
-          current-state
-          goals))
+  (reduce (partial achieve ops) current-state goals))
 
 (defn solved?
   "Checks whether our state achieves all goals"
