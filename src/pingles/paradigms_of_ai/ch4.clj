@@ -32,11 +32,10 @@
   [operators state goal]
   (if (member? goal state)
     state
-    (let [appropriate-ops (filter (partial appropriate? goal) operators)]
-      (reduce (fn [state {:keys [preconditions] :as op}]
-                (apply-op (reduce (partial achieve operators) state preconditions) op))
-              state
-              appropriate-ops))))
+    (reduce (fn [state {:keys [preconditions] :as op}]
+              (apply-op (reduce (partial achieve operators) state preconditions) op))
+            state
+            (filter (partial appropriate? goal) operators))))
 
 (defn gps
   "General Problem Solver: achieve all goals using ops"
