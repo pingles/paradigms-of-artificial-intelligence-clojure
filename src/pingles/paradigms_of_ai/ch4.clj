@@ -16,14 +16,20 @@
   [goal op]
   (member? goal (:add-list op)))
 
-;;(not (nil? (some (partial appropriate? goal) operators)))
+
+;; strategy for achieve
+;; returns the current state, if its already achieved
+;; or iterates through applicable operators, updating
+;; state as it goes. returns the updated state.
 
 (defn achieve
   "A goal is acheived if it already holds or if there is an appropriate op
    for it that is applicable"
   [state operators goal]
   (if (member? goal state)
-    state))
+    state
+    (let [appropriate-ops (filter (partial appropriate? goal) operators)]
+      (reduce apply-op state appropriate-ops))))
 
 (defn apply-op
   "Applies the operation: adding and removing states when op is applicable."
@@ -44,9 +50,8 @@
 (defn gps
   "General Problem Solver: achieve all goals using ops"
   [state goals ops]
-  (letfn [(solve [s]
-            (achieve s ops goals))]
-    (iterate solve state)))
+  (if (every? #(member? % (achieve state ops %)) goals)
+    :solved))
 
 
 (def school-ops [(make-op :drive-son-to-school
