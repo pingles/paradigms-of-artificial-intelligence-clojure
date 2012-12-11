@@ -13,16 +13,16 @@
 
 (defn appropriate?
   "An op is appropriate to a goal if it is in its add-list"
-  [goal op]
-  (member? goal (:add-list op)))
+  [goal {:keys [add-list] :as op}]
+  (member? goal add-list))
 
 (defn apply-op
   "Applies the operation: adding and removing states when op is applicable."
-  [state op]
-  (if (empty? (difference (:preconditions op) state))
+  [state {:keys [preconditions del-list add-list]}]
+  (if (empty? (difference preconditions state))
     (-> state
-        (difference (:del-list op))
-        (union (:add-list op))
+        (difference del-list)
+        (union add-list)
         (set))
     state))
 
