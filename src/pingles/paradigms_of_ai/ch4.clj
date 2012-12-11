@@ -17,19 +17,16 @@
   (member? goal (:add-list op)))
 
 
-;; strategy for achieve
-;; returns the current state, if its already achieved
-;; or iterates through applicable operators, updating
-;; state as it goes. returns the updated state.
-
 (defn achieve
   "A goal is acheived if it already holds or if there is an appropriate op
    for it that is applicable"
   [state operators goal]
   (if (member? goal state)
     state
-    (let [appropriate-ops (filter (partial appropriate? goal) operators)]
-      (reduce apply-op state appropriate-ops))))
+    (reduce (fn [state {:keys [precond] :as op}]
+              (apply-op (reduce #(achieve %1 operators %2) state precond) op))
+            state
+            (filter (partial appropriate? goal) operators))))
 
 (defn apply-op
   "Applies the operation: adding and removing states when op is applicable."

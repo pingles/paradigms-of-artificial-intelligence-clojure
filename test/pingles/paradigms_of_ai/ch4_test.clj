@@ -14,19 +14,40 @@
 (deftest achieving-goals
   (testing "goal is subset of current state"
     (is (= #{:eating}
-           (achieve-recur #{:eating} [] :eating)))
+           (achieve #{:eating} [] :eating)))
     (is (= #{:eating :happy}
-           (achieve-recur #{:eating :happy} [] :eating)))
+           (achieve #{:eating :happy} [] :eating)))
     (is (= #{:eating}
-           (achieve-recur #{:eating} [] :pay))))
+           (achieve #{:eating} [] :pay))))
   (testing "goal is achievable through applicable goal"
     (is (= #{:standing}
-           (achieve-recur #{:sitting}
+           (achieve #{:sitting}
+                    [(make-op :stand
+                              :precond #{:sitting}
+                              :add-list [:standing]
+                              :del-list [:sitting])]
+                    :standing))))
+  (testing "goal is achievable through nested operation"
+    (is (solved? #{:standing}
+                 (achieve #{:sitting}
                           [(make-op :stand
-                                    :precond #{:sitting}
+                                    :precond #{:stretch}
                                     :add-list [:standing]
-                                    :del-list [:sitting])]
-                          :standing)))))
+                                    :del-list [:sitting])
+                           (make-op :stretching
+                                    :precond #{:sitting}
+                                    :add-list [:stretch])]
+                          :standing)))
+    (is (= #{:standing :stretch}
+           (achieve #{:sitting}
+                    [(make-op :stand
+                              :precond #{:stretch}
+                              :add-list [:standing]
+                              :del-list [:sitting])
+                     (make-op :stretching
+                              :precond #{:sitting}
+                              :add-list [:stretch])]
+                    :standing)))))
 
 (deftest applying-ops
   (let [op (make-op :pay :add-list [:paid] :del-list [:eating])]
@@ -50,17 +71,13 @@
     (is (solved? #{:son-at-school}
                  (gps #{:son-at-home :car-works}
                       #{:son-at-school}
-                      school-ops)))
-    (is (= #{:son-at-school :car-works}
-           (gps #{:son-at-home :car-needs-battery :have-money :have-phone-book}
-                #{:son-at-school}
-                school-ops)))
+                      school-ops))) 
     (is (solved? #{:son-at-school :car-works}
                  (gps #{:son-at-home :car-needs-battery :have-money :have-phone-book}
                       #{:son-at-school}
                       school-ops))))
   (testing "unsolvable problem"
-    (is (= #{:son-at-home :car-needs-battery :have-money}
+    (is (= #{:shop-has-money :car-needs-battery :son-at-home}
            (gps #{:son-at-home :car-needs-battery :have-money}
                 #{:son-at-school}
                 school-ops)))
