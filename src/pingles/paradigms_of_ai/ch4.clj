@@ -69,3 +69,10 @@
                           :add-list [:shop-has-money]
                           :del-list [:have-money])])
 
+(comment
+  (solved? #{:son-at-school :car-works}
+           (gps #{:son-at-home :car-needs-battery :have-money :have-phone-book}
+                #{:son-at-school}
+                school-ops))
+  ;true
+  )
