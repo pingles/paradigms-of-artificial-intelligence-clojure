@@ -38,11 +38,19 @@
                      (assoc op :precond #{:have-money}))))))
 
 (deftest general-problem-solver
-  (testing "solved problems"
+  (testing "solvable problems"
     (is (= #{:home}
            (gps #{:home} #{:home} [])))
     (is (solved? #{:home}
                  (gps #{:home} #{:home} [])))
+    (is (= #{:son-at-school :car-works}
+           (gps #{:son-at-home :car-works}
+                #{:son-at-school}
+                school-ops)))
+    (is (solved? #{:son-at-school}
+                 (gps #{:son-at-home :car-works}
+                      #{:son-at-school}
+                      school-ops)))
     (is (= #{:son-at-school :car-works}
            (gps #{:son-at-home :car-needs-battery :have-money :have-phone-book}
                 #{:son-at-school}
