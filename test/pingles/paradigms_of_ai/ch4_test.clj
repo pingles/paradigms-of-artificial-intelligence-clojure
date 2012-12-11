@@ -14,37 +14,37 @@
 (deftest achieving-goals
   (testing "goal is subset of current state"
     (is (= #{:eating}
-           (achieve2 [] #{:eating} :eating)))
+           (achieve [] #{:eating} :eating)))
     (is (= #{:eating :happy}
-           (achieve2 [] #{:eating :happy} :eating)))
+           (achieve [] #{:eating :happy} :eating)))
     (is (= #{:eating}
-           (achieve2 [] #{:eating} :pay))))
+           (achieve [] #{:eating} :pay))))
   (testing "goal is achievable through applicable goal"
     (is (= #{:standing}
-           (achieve2 [(make-op :stand
-                               :precond #{:sitting}
+           (achieve [(make-op :stand
+                               :preconditions #{:sitting}
                                :add-list [:standing]
                                :del-list [:sitting])]
                      #{:sitting}
                      :standing))))
   (testing "goal is achievable through nested operation"
     (is (solved? #{:standing}
-                 (achieve2 [(make-op :stand
-                                     :precond #{:stretch}
+                 (achieve [(make-op :stand
+                                     :preconditions #{:stretch}
                                      :add-list [:standing]
                                      :del-list [:sitting])
                             (make-op :stretching
-                                     :precond #{:sitting}
+                                     :preconditions #{:sitting}
                                      :add-list [:stretch])]
                            #{:sitting}
                            :standing)))
     (is (= #{:standing :stretch}
-           (achieve2 [(make-op :stand
-                               :precond #{:stretch}
+           (achieve [(make-op :stand
+                               :preconditions #{:stretch}
                                :add-list [:standing]
                                :del-list [:sitting])
                       (make-op :stretching
-                               :precond #{:sitting}
+                               :preconditions #{:sitting}
                                :add-list [:stretch])]
                      #{:sitting}
                      :standing)))))
@@ -56,7 +56,7 @@
                      op)))
     (is (= #{:eating}
            (apply-op #{:eating}
-                     (assoc op :precond #{:have-money}))))))
+                     (assoc op :preconditions #{:have-money}))))))
 
 (deftest general-problem-solver
   (testing "solvable problems"
