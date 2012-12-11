@@ -38,12 +38,6 @@
         (set))
     state))
 
-;; in the PAIP book apply-op modifies the current *state*.
-;; and recurs through calling (every? achieve preconditions)
-;;
-;; achieve, likewise, checks whether any operation can be
-;; applied based on whether they're appropriate
-
 (defn gps
   "General Problem Solver: achieve all goals using ops"
   [current-state goals ops]
