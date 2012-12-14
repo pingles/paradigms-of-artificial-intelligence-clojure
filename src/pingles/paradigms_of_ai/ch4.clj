@@ -18,24 +18,21 @@
 
 (defn apply-op
   "Applies the operation: adding and removing states when op is applicable."
-  [state {:keys [preconditions del-list add-list action]}]
-  (if (empty? (difference preconditions state))
-    (-> state
-        (difference del-list)
-        (union add-list)
-        (set))
-    state))
+  [state {:keys [preconditions] :as op}]
+  (letfn [(update-state [state {:keys [del-list add-list]}]
+            (-> state (difference del-list) (union add-list) (set)))]
+    (cond (empty? (difference preconditions state)) (update-state state op)
+          :else state)))
 
 (defn achieve
   "A goal is acheived if it already holds or if there is an appropriate op
    for it that is applicable"
   [operators state goal]
-  (if (member? goal state)
-    state
-    (reduce (fn [state {:keys [preconditions] :as op}]
-              (apply-op (reduce (partial achieve operators) state preconditions) op))
-            state
-            (filter (partial appropriate? goal) operators))))
+  (cond (member? goal state) state
+        :else (reduce (fn [state {:keys [preconditions] :as op}]
+                        (apply-op (reduce (partial achieve operators) state preconditions) op))
+                      state
+                      (filter (partial appropriate? goal) operators))))
 
 (defn gps
   "General Problem Solver: achieve all goals using ops"
