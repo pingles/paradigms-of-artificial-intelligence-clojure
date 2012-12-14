@@ -18,7 +18,7 @@
 
 (defn apply-op
   "Applies the operation: adding and removing states when op is applicable."
-  [state {:keys [preconditions del-list add-list]}]
+  [state {:keys [preconditions del-list add-list action]}]
   (if (empty? (difference preconditions state))
     (-> state
         (difference del-list)

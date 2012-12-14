@@ -96,4 +96,22 @@
     (is (not (solved? #{:have-money :son-at-school}
                       (gps #{:son-at-home :car-needs-battery :have-money :have-phone-book}
                            #{:have-money :son-at-school}
-                           school-ops))))))
+                           school-ops)))))
+
+  (testing "leaping before you look"
+    ;; we correctly can't solve the problem, but the initial algorithm
+    ;; executes operations that will ultimately cause it to fail
+    (is (not (solved? #{:son-at-school :have-money}
+                      (gps #{:son-at-home :car-needs-battery :have-money :have-phone-book}
+                           #{:son-at-school :have-money}
+                           school-ops)))))
+
+  (testing "recursive subgoal"
+    ;; this will cause a recursive overflow
+    (let [ops (conj school-ops (make-op :ask-phone-number
+                                        :preconditions #{:in-communication-with-shop}
+                                        :add-list [:know-phone-number]))]
+      (is (thrown? StackOverflowError
+                   (gps #{:son-at-home :car-needs-battery :have-money}
+                        #{:son-at-school}
+                        ops))))))
