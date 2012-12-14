@@ -45,8 +45,7 @@
 (defn solved?
   "Checks whether our state achieves all goals"
   [goals state]
-  (every? #(member? % state) goals))
-
+  (empty? (difference goals state)))
 
 (def school-ops [(make-op :drive-son-to-school
                           :preconditions #{:son-at-home :car-works}
@@ -70,7 +69,7 @@
                           :del-list [:have-money])])
 
 (comment
-  (solved? #{:son-at-school :car-works}
+  (solved? #{:son-at-school}
            (gps #{:son-at-home :car-needs-battery :have-money :have-phone-book}
                 #{:son-at-school}
                 school-ops))

@@ -84,4 +84,16 @@
     (is (not (solved? #{:son-at-school}
                       (gps #{:son-at-home :car-needs-battery :have-money}
                            #{:son-at-school}
+                           school-ops)))))
+  (testing "pre-requisite clobbers sibling goal"
+    (is (solved? #{:have-money :son-at-school}
+                 (gps #{:son-at-home :have-money :car-works}
+                      #{:have-money :son-at-school}
+                      school-ops)))
+
+    ;; we can't :have-money because we'll need to spend it on a
+    ;; battery for the car
+    (is (not (solved? #{:have-money :son-at-school}
+                      (gps #{:son-at-home :car-needs-battery :have-money :have-phone-book}
+                           #{:have-money :son-at-school}
                            school-ops))))))
