@@ -20,7 +20,7 @@
     (is (= #{:eating}
            (achieve [] #{:eating} :pay))))
   (testing "goal is achievable through applicable goal"
-    (is (= #{:standing}
+    (is (= #{:standing '(:executing :stand)}
            (achieve [(make-op :stand
                                :preconditions #{:sitting}
                                :add-list [:standing]
@@ -38,7 +38,7 @@
                                      :add-list [:stretch])]
                            #{:sitting}
                            :standing)))
-    (is (= #{:standing :stretch}
+    (is (= #{:standing :stretch '(:executing :stretching) '(:executing :stand)}
            (achieve [(make-op :stand
                                :preconditions #{:stretch}
                                :add-list [:standing]
@@ -51,7 +51,7 @@
 
 (deftest applying-ops
   (let [op (make-op :pay :add-list [:paid] :del-list [:eating])]
-    (is (= #{:paid}
+    (is (= #{:paid '(:executing :pay)}
            (apply-op #{:eating}
                      op)))
     (is (= #{:eating}
@@ -107,11 +107,11 @@
                            school-ops)))))
 
   (testing "recursive subgoal"
-    ;; this will cause a recursive overflow
     (let [ops (conj school-ops (make-op :ask-phone-number
                                         :preconditions #{:in-communication-with-shop}
                                         :add-list [:know-phone-number]))]
-      (is (thrown? StackOverflowError
-                   (gps #{:son-at-home :car-needs-battery :have-money}
-                        #{:son-at-school}
-                        ops))))))
+      (is (not (solved? #{:son-at-school}
+                        (gps #{:son-at-home :car-needs-battery :have-money}
+                             #{:son-at-school}
+                             ops)))))))
+

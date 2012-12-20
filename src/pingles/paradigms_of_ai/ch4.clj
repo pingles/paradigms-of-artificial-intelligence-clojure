@@ -3,9 +3,20 @@
 
 (defrecord Op [action preconditions add-list del-list])
 
+(defn executing-op
+  [{:keys [add-list action] :as op}]
+  (assoc op :add-list (conj add-list (list :executing action))))
+
 (defn make-op
   [action & kvs]
-  (map->Op (apply hash-map (concat kvs [:action action]))))
+  (-> (map->Op (apply hash-map (concat kvs [:action action])))
+      (executing-op)))
+
+
+(defn executing?
+  [x]
+  (and (sequential? x)
+       (= :executing (first x))))
 
 (defn member?
   [x coll]
@@ -27,17 +38,26 @@
 (defn achieve
   "A goal is acheived if it already holds or if there is an appropriate op
    for it that is applicable"
-  [operators state goal]
-  (cond (member? goal state) state
-        :else (reduce (fn [state {:keys [preconditions] :as op}]
-                        (apply-op (reduce (partial achieve operators) state preconditions) op))
-                      state
-                      (filter (partial appropriate? goal) operators))))
+  ([operators state goal] (achieve operators [] state goal))
+  ([operators goal-stack state goal]
+     (cond (member? goal state) state
+           (member? goal goal-stack) nil
+           :else (reduce (fn [state {:keys [preconditions] :as op}]
+                           (apply-op (reduce (partial achieve operators (conj goal-stack goal))
+                                             state
+                                             preconditions)
+                                     op))
+                         state
+                         (filter (partial appropriate? goal) operators)))))
 
 (defn gps
   "General Problem Solver: achieve all goals using ops"
   [current-state goals ops]
-  (reduce (partial achieve ops) current-state goals))
+  (->> goals
+       (reduce (partial achieve ops)
+               current-state)
+       (remove sequential?)
+       (set)))
 
 (defn solved?
   "Checks whether our state achieves all goals"
